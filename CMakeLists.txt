@@ -4,7 +4,7 @@ project("JSON_SPIRIT")
 
 FIND_PACKAGE(Boost)
 
-IF (!Boost_FOUND)
+IF (NOT Boost_FOUND)
 	MESSAGE(WARNING "DIDN'T FIND BOOST, TRYING TO USE %ENV_BOOST_PATH% ENVIRONMENT VARIABLE")
 
 	# in case BOOST_ROOT is invalid, use the environment variable ENV_BOOST_PATH
@@ -21,7 +21,7 @@ IF(CMAKE_SYSTEM_NAME MATCHES Windows)
     # definitions used by visual studio to export or import as a dynamic library.
     ADD_DEFINITIONS(-DXXON_EXPORTS)
 
-    LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${BOOST_ROOT}/stage/lib_$(PlatformShortName))
+    LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${Boost_INCLUDE_DIR}/stage/lib_$(PlatformShortName))
     ADD_DEFINITIONS("/wd4251 /wd4275 /MP") # disable some warnings and enable multiprocessing.
 
 ELSEIF(CMAKE_SYSTEM_NAME MATCHES Linux)

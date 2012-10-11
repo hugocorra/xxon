@@ -11,53 +11,82 @@
 namespace xxon
 {
     class AST;
-    
-    /* recursive wrapper, works like a tree */
+  
+    struct Dict;
+    struct List;
+
     typedef boost::variant<
-        boost::recursive_wrapper<AST>,
-        std::string
-    > ASTNode;
-    
-    /* a tree node can be: <string, string> or <string, AST> */
-    typedef std::map<std::string, ASTNode> NodeType;
-    
-    class AST
-    {
-    public:
-        /* this function is responsible to get the value of a pair<string, string>,
-         * inside the map properties. 
-         * TODO: I really don't like this method here! In the future, it should be moved inside
-         *       the Dispatcher and should work as a lazy function. */
-        template <typename T>
-        bool getDirective(const std::string& name, T& value_typed)
-        {
-            try
-            {
-                auto it = properties.find(name);
-                if (it != properties.end())
-                {
-                    // check the value type, and convert it to type T.
-                    if (std::string* is_string = boost::get<std::string>(&it->second))
-                        value_typed = boost::lexical_cast<T>(*is_string);
-                }
-            }
-            catch(boost::bad_lexical_cast &)
-            {
-                return false;
-            }
+        std::string,
+        int,
+        double,
+        bool,
+        boost::recursive_wrapper<Dict>,
+        boost::recursive_wrapper<List>
+    > AnyValue;
 
-            return true;
-        }
-
-        NodeType properties;
+    struct Dict {
+        std::map<std::string, AnyValue> items;
     };
+
+    struct List {
+        std::vector<AnyValue> values;
+    };
+
+    class AST {
+        std::vector<boost::variant<Dict, List>> _nodes;
+    };
+
+    /* a tree node can be: <string, string> or <string, AST> */
+    //typedef std::map<std::string, ASTNode> NodeType;
+    
+    //class AST;
+    //
+    ///* recursive wrapper, works like a tree */
+    //typedef boost::variant<
+    //    boost::recursive_wrapper<AST>,
+    //    std::string
+    //> ASTNode;
+    //
+    ///* a tree node can be: <string, string> or <string, AST> */
+    //typedef std::map<std::string, ASTNode> NodeType;
+    //
+    //class AST
+    //{
+    //public:
+    //    /* this function is responsible to get the value of a pair<string, string>,
+    //     * inside the map properties. 
+    //     * TODO: I really don't like this method here! In the future, it should be moved inside
+    //     *       the Dispatcher and should work as a lazy function. */
+    //    template <typename T>
+    //    bool getDirective(const std::string& name, T& value_typed)
+    //    {
+    //        try
+    //        {
+    //            auto it = properties.find(name);
+    //            if (it != properties.end())
+    //            {
+    //                // check the value type, and convert it to type T.
+    //                if (std::string* is_string = boost::get<std::string>(&it->second))
+    //                    value_typed = boost::lexical_cast<T>(*is_string);
+    //            }
+    //        }
+    //        catch(boost::bad_lexical_cast &)
+    //        {
+    //            return false;
+    //        }
+
+    //        return true;
+    //    }
+
+    //    NodeType properties;
+    //};
 };
 
 /* in order to use some spirit features, it's necessary to transform it in a random access sequence. */
-BOOST_FUSION_ADAPT_STRUCT(
-    xxon::AST,
-    (xxon::NodeType, properties)
-)
+//BOOST_FUSION_ADAPT_STRUCT(
+//    xxon::AST,
+//    (xxon::NodeType, properties)
+//)
 
 #endif
 
