@@ -8,6 +8,7 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/spirit/include/qi.hpp>
+//#include <boost/phoenix/stl/container.hpp>
 #include <boost/typeof/typeof.hpp>
 
 #include <iostream>
@@ -39,6 +40,7 @@ namespace xxon
 
             using phoenix::at_c;
             using phoenix::insert;
+			using phoenix::push_back;
             
         //    key   =  
         //        !lit('}')                           //< ignore any sequence starting with }
@@ -76,19 +78,36 @@ namespace xxon
 
             ///*****************************************************************///
 
-            
+			using qi::int_;
+
+			 //list[phoenix::push_back(at_c<0>(_val))];
 
 
+
+			//push_back(at_c<0>, 10);
+
+
+			//list =
+			//	!lit('}')                               //< ignore any sequence starting with }
+			//	>>  lexeme[+(char_ - ':')[_val += _1]]; //< reads everything until a : character.
+
+			//ast %= 
+			//	list[push_back(at_c<0>(_val), _1)]; 
+
+			//ast %= value_int[push_back(at_c<0>, 10)];
+
+			//value_str = lexeme[+(char_ - '"')        [_val += _1]];
+
+			
+			//ast = value_str;
         }
 
-        qi::rule<Iterator, AST(), Skipper> ast;
-        qi::rule<Iterator, AST(), Skipper> ast_child;
-
-        qi::rule<Iterator, std::string(), Skipper> key;
+        qi::rule<Iterator, AST(),         Skipper> ast;
+		qi::rule<Iterator, List(),        Skipper> list;
 
         qi::rule<Iterator, bool(),        Skipper> value_bool;
         qi::rule<Iterator, double(),      Skipper> value_double;
-        qi::rule<Iterator, int(),         Skipper> value_int;
+		qi::rule<Iterator, int(),         Skipper> value_int;
         qi::rule<Iterator, std::string(), Skipper> value_str;
     };
 };

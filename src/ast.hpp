@@ -11,29 +11,36 @@
 namespace xxon
 {
     class AST;
-  
-    struct Dict;
-    struct List;
+    class Dict;
+    class List;
 
     typedef boost::variant<
         std::string,
-        int,
         double,
         bool,
         boost::recursive_wrapper<Dict>,
         boost::recursive_wrapper<List>
     > AnyValue;
 
-    struct Dict {
-        std::map<std::string, AnyValue> items;
+    class Dict {
+	public:
+		typedef std::map<std::string, AnyValue> NodeType;
+        NodeType items;
     };
 
-    struct List {
-        std::vector<AnyValue> values;
+    class List {
+	public:
+		//typedef std::vector<AnyValue> NodeType;
+		//typedef std::vector<std::string> NodeType;
+		typedef std::string NodeType;
+        NodeType values;
     };
 
     class AST {
-        std::vector<boost::variant<Dict, List>> _nodes;
+	public:
+		//typedef std::vector<boost::variant<Dict, List>> NodeType;
+		typedef std::vector<int> NodeType;
+        NodeType nodes;
     };
 
     /* a tree node can be: <string, string> or <string, AST> */
@@ -83,10 +90,20 @@ namespace xxon
 };
 
 /* in order to use some spirit features, it's necessary to transform it in a random access sequence. */
-//BOOST_FUSION_ADAPT_STRUCT(
-//    xxon::AST,
-//    (xxon::NodeType, properties)
-//)
+BOOST_FUSION_ADAPT_STRUCT(
+    xxon::AST,
+    (xxon::AST::NodeType, nodes)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+    xxon::List,
+    (xxon::List::NodeType, nodes)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+    xxon::Dict,
+    (xxon::Dict::NodeType, nodes)
+)
 
 #endif
 

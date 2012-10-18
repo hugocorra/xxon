@@ -21,19 +21,51 @@ BOOST_AUTO_TEST_SUITE(TestModuleParser)
 /**
  * Test Description: Test the parser behavior with empty strings.
  **/
-BOOST_AUTO_TEST_CASE(TestCaseParserEmpty)
+//BOOST_AUTO_TEST_CASE(TestCaseParserEmpty)
+//{
+//    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+//    xxon::Parser parser(*ast_ptr);
+//
+//    std::string empty_1 = "";
+//    std::string empty_2 = "#this is a commentary";
+//
+//    // parser should throw an exception, in case of an empty string.
+//    BOOST_REQUIRE_THROW(parser.execute(empty_1), std::invalid_argument);
+//
+//    // parser should return true, in case of a string with only commentaries.
+//    BOOST_CHECK_EQUAL(parser.execute(empty_2), true);
+//}
+
+BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
 {
     boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
     xxon::Parser parser(*ast_ptr);
 
-    std::string empty_1 = "";
-    std::string empty_2 = "#this is a commentary";
+	std::string empty_dict = "{}";
 
     // parser should throw an exception, in case of an empty string.
-    BOOST_REQUIRE_THROW(parser.execute(empty_1), std::invalid_argument);
+    parser.execute(empty_dict);
+
+	std::cout << "DictTest Size = " << ast_ptr->nodes.size() << std::endl;
 
     // parser should return true, in case of a string with only commentaries.
-    BOOST_CHECK_EQUAL(parser.execute(empty_2), true);
+    //BOOST_CHECK_EQUAL(parser.execute(empty_2), true);
+}
+
+BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
+{
+    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+    xxon::Parser parser(*ast_ptr);
+
+	std::string empty_list = "[]";
+
+    // parser should throw an exception, in case of an empty string.
+    parser.execute(empty_list);
+
+	std::cout << "ListTest Size = " << ast_ptr->nodes.size() << std::endl;
+
+    // parser should return true, in case of a string with only commentaries.
+    //BOOST_CHECK_EQUAL(parser.execute(empty_2), true);
 }
 
 ///**
