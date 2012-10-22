@@ -4,6 +4,7 @@
 #define BOOST_TEST_MODULE TestModuleParser
 
 #include <iostream>
+#include <iterator>
 #include <stdexcept>
 #include <vector>
 
@@ -57,12 +58,14 @@ BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
     boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
     xxon::Parser parser(*ast_ptr);
 
-	std::string empty_list = "[]";
+	std::string empty_list = "7";
 
     // parser should throw an exception, in case of an empty string.
     parser.execute(empty_list);
 
 	std::cout << "ListTest Size = " << ast_ptr->nodes.size() << std::endl;
+	std::copy(ast_ptr->nodes.begin(), ast_ptr->nodes.end(), std::ostream_iterator<int>(std::cout, ";"));
+	std::cout << std::endl;
 
     // parser should return true, in case of a string with only commentaries.
     //BOOST_CHECK_EQUAL(parser.execute(empty_2), true);

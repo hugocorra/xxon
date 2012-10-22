@@ -18,6 +18,7 @@ namespace xxon
         std::string,
         double,
         bool,
+		int,
         boost::recursive_wrapper<Dict>,
         boost::recursive_wrapper<List>
     > AnyValue;
@@ -30,9 +31,10 @@ namespace xxon
 
     class List {
 	public:
-		//typedef std::vector<AnyValue> NodeType;
+		typedef std::vector<AnyValue> NodeType;
 		//typedef std::vector<std::string> NodeType;
-		typedef std::string NodeType;
+		//typedef int NodeType;
+		//typedef std::vector<int> NodeType;
         NodeType values;
     };
 
@@ -97,7 +99,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
     xxon::List,
-    (xxon::List::NodeType, nodes)
+    (xxon::List::NodeType, values)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(

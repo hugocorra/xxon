@@ -41,6 +41,7 @@ namespace xxon
             using phoenix::at_c;
             using phoenix::insert;
 			using phoenix::push_back;
+			//using phoenix::push_back_a;
             
         //    key   =  
         //        !lit('}')                           //< ignore any sequence starting with }
@@ -78,37 +79,21 @@ namespace xxon
 
             ///*****************************************************************///
 
+			list = qi::int_[push_back(at_c<0>(_val), qi::_1)];
+
 			using qi::int_;
-
-			 //list[phoenix::push_back(at_c<0>(_val))];
-
-
-
-			//push_back(at_c<0>, 10);
-
-
-			//list =
-			//	!lit('}')                               //< ignore any sequence starting with }
-			//	>>  lexeme[+(char_ - ':')[_val += _1]]; //< reads everything until a : character.
-
-			//ast %= 
-			//	list[push_back(at_c<0>(_val), _1)]; 
-
-			//ast %= value_int[push_back(at_c<0>, 10)];
-
-			//value_str = lexeme[+(char_ - '"')        [_val += _1]];
-
-			
-			//ast = value_str;
+			ast = qi::int_[push_back(at_c<0>(_val), qi::_1)];
         }
 
         qi::rule<Iterator, AST(),         Skipper> ast;
 		qi::rule<Iterator, List(),        Skipper> list;
 
-        qi::rule<Iterator, bool(),        Skipper> value_bool;
-        qi::rule<Iterator, double(),      Skipper> value_double;
-		qi::rule<Iterator, int(),         Skipper> value_int;
-        qi::rule<Iterator, std::string(), Skipper> value_str;
+  //      qi::rule<Iterator, bool(),        Skipper> value_bool;
+  //      qi::rule<Iterator, double(),      Skipper> value_double;
+		//qi::rule<Iterator, int(),         Skipper> value_int;
+  //      qi::rule<Iterator, std::string(), Skipper> value_str;
+
+		qi::rule<Iterator, AnyValue, Skipper> any_value;
     };
 };
 
