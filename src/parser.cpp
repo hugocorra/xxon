@@ -30,7 +30,14 @@ namespace xxon
         Grammar<std::string::const_iterator, skipper_type> gramar;
 
         auto iter = str.begin();
-        bool r = boost::spirit::qi::phrase_parse(iter, str.end(), gramar, skipper, _ast);       
+
+		//std::cout << "test..." << std::endl;
+		//std::cout << "vector size = " << _ast.nodes.size() << std::endl;
+
+		AST x;
+		bool r = boost::spirit::qi::phrase_parse(iter, str.end(), gramar, skipper, x);       
+
+		_ast = x;
 
         return r && (iter == str.end());
     }

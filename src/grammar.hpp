@@ -8,7 +8,10 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_lit.hpp>
+#include <boost/spirit/include/qi_directive.hpp>
 //#include <boost/phoenix/stl/container.hpp>
+#include <boost/spirit/home/classic/core/composite/directives.hpp>
 #include <boost/typeof/typeof.hpp>
 
 #include <iostream>
@@ -30,7 +33,7 @@ namespace xxon
     template <typename Iterator, typename Skipper = ascii::space_type>
     struct Grammar : qi::grammar<Iterator, AST(), Skipper>
     {
-        Grammar() : Grammar::base_type(ast)
+        Grammar() : Grammar::base_type(astx)
         {
             using qi::lit;
             using qi::lexeme;
@@ -41,6 +44,7 @@ namespace xxon
             using phoenix::at_c;
             using phoenix::insert;
 			using phoenix::push_back;
+
 			//using phoenix::push_back_a;
             
         //    key   =  
@@ -79,21 +83,54 @@ namespace xxon
 
             ///*****************************************************************///
 
-			list = qi::int_[push_back(at_c<0>(_val), qi::_1)];
+            //key   =  lexeme[+(char_ - ':')[_val += _1]];
 
-			using qi::int_;
-			ast = qi::int_[push_back(at_c<0>(_val), qi::_1)];
+			//any_value = qi::int_;
+
+			//qi::longest_alternative[ integer | real ];
+
+			text = '"' >> lexeme[+(char_ - '"')        [_val += _1]] >> '"';
+
+            key   =  '"' >> lexeme[+(char_ - '"')[_val += _1]] >> '"'; //< reads everything until a : character.
+            
+            value =  (text | qi::bool_ | qi::double_ | dict | list); //qi::int_; //lexeme[+(char_ - '<')        [_val += _1]];
+			
+			
+            pair  = 
+				key                          //< apply key rule
+				>>  -(':' >> value ); //< reads the : not consumed by the key rule, then
+                                      //  reads a pair of key,value (<string, string>),
+                                      //  or a pair of key,value (<string, AST>).
+
+			dict = lit('{')
+				>>  pair[insert(at_c<0>(_val), _1)] % ','
+				>> lit('}');
+
+
+			list = lit('[')
+				>> (qi::bool_ | qi::double_ | text | dict)[push_back(at_c<0>(_val), qi::_1)] % ','
+				>> lit(']');
+
+			astx = dict[push_back(at_c<0>(_val), qi::_1)]; //list[push_back(at_c<0>(_val), qi::_1)];
         }
 
-        qi::rule<Iterator, AST(),         Skipper> ast;
+        qi::rule<Iterator, AST(),         Skipper> astx;
 		qi::rule<Iterator, List(),        Skipper> list;
+		qi::rule<Iterator, Dict(),        Skipper> dict;
+
+		qi::rule<Iterator, std::pair<std::string, AnyValue>(), Skipper> pair;
+
+		qi::rule<Iterator, std::string(), Skipper> key;
+		qi::rule<Iterator, AnyValue(),    Skipper> value;
+		qi::rule<Iterator, std::string(), Skipper> text;
 
   //      qi::rule<Iterator, bool(),        Skipper> value_bool;
   //      qi::rule<Iterator, double(),      Skipper> value_double;
 		//qi::rule<Iterator, int(),         Skipper> value_int;
   //      qi::rule<Iterator, std::string(), Skipper> value_str;
 
-		qi::rule<Iterator, AnyValue, Skipper> any_value;
+		//qi::rule<Iterator, AnyValue, Skipper> any_value;
+		//qi::rule<Iterator, std::string(), Skipper> key;
     };
 };
 

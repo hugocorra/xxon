@@ -39,15 +39,15 @@ BOOST_AUTO_TEST_SUITE(TestModuleParser)
 
 BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
 {
-    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
-    xxon::Parser parser(*ast_ptr);
+ //   boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+ //   xxon::Parser parser(*ast_ptr);
 
-	std::string empty_dict = "{}";
+	//std::string empty_dict = "{}";
 
-    // parser should throw an exception, in case of an empty string.
-    parser.execute(empty_dict);
+ //   // parser should throw an exception, in case of an empty string.
+ //   parser.execute(empty_dict);
 
-	std::cout << "DictTest Size = " << ast_ptr->nodes.size() << std::endl;
+	//std::cout << "DictTest Size = " << ast_ptr->nodes.size() << std::endl;
 
     // parser should return true, in case of a string with only commentaries.
     //BOOST_CHECK_EQUAL(parser.execute(empty_2), true);
@@ -55,17 +55,46 @@ BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
 
 BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
 {
-    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
-    xxon::Parser parser(*ast_ptr);
+    //boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+	xxon::AST a;
+    xxon::Parser parser(a);
 
-	std::string empty_list = "7";
+//	std::string empty_list = "[77, 88.1, true, 5, false, 1]";
+	//std::string empty_list = "{\"idade\": 10}";
+	std::string empty_list = "\
+	{\
+		\"nome\": \"hugo\",\
+		\"idade\": 28,\
+		\"cores\": [\
+			\"azul\",\
+			\"verde\",\
+			\"amarelo\"\
+		],\
+		\"endereco\": {\
+			\"cidade\": \"Sao Jose\",\
+			\"rua\": \"Quintana\",\
+			\"numero\": 915\
+		},\
+		\"computadores\": [\
+			{\
+				\"cpmp\": \"endevour\"\
+			},\
+			{\
+				\"comp\": \"columbia\"\
+			}\
+		]\
+	}";
 
     // parser should throw an exception, in case of an empty string.
+	std::cout << "parsing...." << std::endl;
     parser.execute(empty_list);
+	std::cout << "fim parsing...." << std::endl;
 
-	std::cout << "ListTest Size = " << ast_ptr->nodes.size() << std::endl;
-	std::copy(ast_ptr->nodes.begin(), ast_ptr->nodes.end(), std::ostream_iterator<int>(std::cout, ";"));
+	std::cout << "ListTest Size = " << a.nodes.size() << std::endl;
+	//std::copy(ast_ptr->nodes.begin(), ast_ptr->nodes.end(), std::ostream_iterator<int>(std::cout, ";"));
 	std::cout << std::endl;
+
+	debug_ast(a);
 
     // parser should return true, in case of a string with only commentaries.
     //BOOST_CHECK_EQUAL(parser.execute(empty_2), true);

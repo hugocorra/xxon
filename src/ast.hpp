@@ -15,22 +15,25 @@ namespace xxon
     class List;
 
     typedef boost::variant<
-        std::string,
-        double,
-        bool,
-		int,
-        boost::recursive_wrapper<Dict>,
-        boost::recursive_wrapper<List>
+		Dict,
+		List,
+		bool,
+		double,
+		std::string
     > AnyValue;
 
     class Dict {
 	public:
+		Dict() : items() {};
+
 		typedef std::map<std::string, AnyValue> NodeType;
         NodeType items;
     };
 
     class List {
 	public:
+		List() : values(0) {};
+
 		typedef std::vector<AnyValue> NodeType;
 		//typedef std::vector<std::string> NodeType;
 		//typedef int NodeType;
@@ -40,8 +43,10 @@ namespace xxon
 
     class AST {
 	public:
-		//typedef std::vector<boost::variant<Dict, List>> NodeType;
-		typedef std::vector<int> NodeType;
+		AST() : nodes(0) {};
+
+		typedef std::vector<boost::variant<Dict, List>> NodeType;
+		//typedef std::vector<int> NodeType;
         NodeType nodes;
     };
 
@@ -104,7 +109,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
     xxon::Dict,
-    (xxon::Dict::NodeType, nodes)
+    (xxon::Dict::NodeType, items)
 )
 
 #endif
