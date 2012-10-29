@@ -28,109 +28,55 @@ namespace xxon
     namespace qi = boost::spirit::qi;
     namespace ascii = boost::spirit::ascii;
 
-    /* basically, there are only four important chars that the parse needs to 
-     * find an take an action: ":" "," "{" and "}". */
     template <typename Iterator, typename Skipper = ascii::space_type>
-    struct Grammar : qi::grammar<Iterator, AST(), Skipper>
+    struct Grammar : public qi::grammar<Iterator, AST(), Skipper>
     {
-        Grammar() : Grammar::base_type(astx)
+        Grammar() : Grammar::base_type(ast)
         {
-            using qi::lit;
-            using qi::lexeme;
             using ascii::char_;
-            using ascii::string;
-            using namespace qi::labels;
 
             using phoenix::at_c;
             using phoenix::insert;
-			using phoenix::push_back;
+            using phoenix::push_back;
 
-			//using phoenix::push_back_a;
+            using qi::bool_;
+            using qi::double_;
+            using qi::lexeme;
+            using qi::lit;
+
+            using namespace qi::labels;
+
+			text = '"' 
+				>> lexeme[+(char_ - '"')[_val += _1]]
+				>> '"';
+
+            key   =  '"' 
+				>> lexeme[+(char_ - '"')[_val += _1]]
+				>> '"';
             
-        //    key   =  
-        //        !lit('}')                           //< ignore any sequence starting with }
-        //    >>  lexeme[+(char_ - ':')[_val += _1]]; //< reads everything until a : character.
-        //    
-        //    value = 
-        //        !lit('{')                           //< ignore any sequence starting with {
-        //    >>  lexeme[+(char_ - ',')[_val += _1]]; //< reads everything until a , character.
-        //    
-        //    pair  = 
-        //        !lit('}')                    //< ignore any sequence starting with }
-        //    >>  key                          //< apply key rule
-        //    >>  -(':' >> value | ast_child); //< reads the : not consumed by the key rule, then
-        //                                     //  reads a pair of key,value (<string, string>),
-        //                                     //  or a pair of key,value (<string, AST>).
-
-        //    ast_child %=
-        //        lit(':')                         //< only sequences starting with : character.
-        //    >>  lit('{')                         //< only sequences followed by a { character.
-        //    >>  *(-(qi::lit(','))                //< ignores , character
-        //    >>  pair[insert(at_c<0>(_val), _1)]) //< apply the pair rule, and puts the value inside the AST.
-        //    >>  -(lit(','))                      //< the sequence should have a , character before the end.
-        //    >>  lit('}');                        //< the child sequence should be closed by a } character.
-        //    
-        //    ast %= 
-        //        pair[insert(at_c<0>(_val), _1)]       //< reads a pair 
-        //    >>  *(qi::lit(',')                        //< reads a list of pairs, separated by , character.
-        //    >>  pair[insert(at_c<0>(_val), _1)]); //< notice that the setence was started in the line abouve.
-        //} 
-
-        //qi::rule<Iterator, AST(), Skipper> ast;
-        //qi::rule<Iterator, AST(), Skipper> ast_child;
-        //qi::rule<Iterator, std::pair<std::string, ASTNode>(), Skipper> pair;
-        //qi::rule<Iterator, std::string(), Skipper> key, value;
-
-            ///*****************************************************************///
-
-            //key   =  lexeme[+(char_ - ':')[_val += _1]];
-
-			//any_value = qi::int_;
-
-			//qi::longest_alternative[ integer | real ];
-
-			text = '"' >> lexeme[+(char_ - '"')        [_val += _1]] >> '"';
-
-            key   =  '"' >> lexeme[+(char_ - '"')[_val += _1]] >> '"'; //< reads everything until a : character.
-            
-            value =  (text | qi::bool_ | qi::double_ | dict | list); //qi::int_; //lexeme[+(char_ - '<')        [_val += _1]];
-			
-			
-            pair  = 
-				key                          //< apply key rule
-				>>  -(':' >> value ); //< reads the : not consumed by the key rule, then
-                                      //  reads a pair of key,value (<string, string>),
-                                      //  or a pair of key,value (<string, AST>).
+            value =  (text | bool_ | double_ | dict | list);
+		
+            pair  = key               
+				>>  -(':' >> value ); //< reads the : not consumed by the key rule, then...
 
 			dict = lit('{')
 				>>  pair[insert(at_c<0>(_val), _1)] % ','
 				>> lit('}');
 
-
 			list = lit('[')
-				>> (qi::bool_ | qi::double_ | text | dict)[push_back(at_c<0>(_val), qi::_1)] % ','
+				>> (value)[push_back(at_c<0>(_val), qi::_1)] % ','
 				>> lit(']');
 
-			astx = dict[push_back(at_c<0>(_val), qi::_1)]; //list[push_back(at_c<0>(_val), qi::_1)];
+			ast = dict[push_back(at_c<0>(_val), qi::_1)];
         }
 
-        qi::rule<Iterator, AST(),         Skipper> astx;
-		qi::rule<Iterator, List(),        Skipper> list;
-		qi::rule<Iterator, Dict(),        Skipper> dict;
-
-		qi::rule<Iterator, std::pair<std::string, AnyValue>(), Skipper> pair;
-
-		qi::rule<Iterator, std::string(), Skipper> key;
-		qi::rule<Iterator, AnyValue(),    Skipper> value;
-		qi::rule<Iterator, std::string(), Skipper> text;
-
-  //      qi::rule<Iterator, bool(),        Skipper> value_bool;
-  //      qi::rule<Iterator, double(),      Skipper> value_double;
-		//qi::rule<Iterator, int(),         Skipper> value_int;
-  //      qi::rule<Iterator, std::string(), Skipper> value_str;
-
-		//qi::rule<Iterator, AnyValue, Skipper> any_value;
-		//qi::rule<Iterator, std::string(), Skipper> key;
+        qi::rule<Iterator, AnyValue(),    Skipper> value;
+        qi::rule<Iterator, AST(),         Skipper> ast;
+        qi::rule<Iterator, Dict(),        Skipper> dict;
+        qi::rule<Iterator, List(),        Skipper> list;
+        qi::rule<Iterator, std::pair<std::string, AnyValue>(), Skipper> pair;
+        qi::rule<Iterator, std::string(), Skipper> key;
+        qi::rule<Iterator, std::string(), Skipper> text;
     };
 };
 

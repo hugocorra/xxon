@@ -60,30 +60,100 @@ BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
     xxon::Parser parser(a);
 
 //	std::string empty_list = "[77, 88.1, true, 5, false, 1]";
+	
 	//std::string empty_list = "{\"idade\": 10}";
-	std::string empty_list = "\
-	{\
-		\"nome\": \"hugo\",\
-		\"idade\": 28,\
-		\"cores\": [\
-			\"azul\",\
-			\"verde\",\
-			\"amarelo\"\
-		],\
-		\"endereco\": {\
-			\"cidade\": \"Sao Jose\",\
-			\"rua\": \"Quintana\",\
-			\"numero\": 915\
-		},\
-		\"computadores\": [\
-			{\
-				\"cpmp\": \"endevour\"\
-			},\
-			{\
-				\"comp\": \"columbia\"\
-			}\
-		]\
-	}";
+
+
+	//std::string empty_list = "\
+	//{\
+	//	\"nome\": \"hugo\",\
+	//	\"idade\": 28,\
+	//	\"cores\": [\
+	//		\"azul\",\
+	//		\"verde\",\
+	//		\"amarelo\"\
+	//	],\
+	//	\"endereco\": {\
+	//		\"cidade\": \"Sao Jose\",\
+	//		\"rua\": \"Quintana\",\
+	//		\"numero\": 915\
+	//	},\
+	//	\"computadores\": [\
+	//		{\
+	//			\"cpmp\": \"endevour\"\
+	//		},\
+	//		{\
+	//			\"comp\": \"columbia\"\
+	//		}\
+	//	]\
+	//}";
+
+	std::string empty_list = \
+"{ \
+    \"health\": 64, \
+    \"hosts\": [ \
+        { \
+            \"name\": \"Windows2000P\", \
+            \"states\": [ \
+                { \
+                    \"name\": \"CPU\", \
+                    \"link\": \"(html link)\", \
+                    \"bgcolor\": \"#CC99CC\" \
+                }, \
+                { \
+                    \"name\": \"Disk\", \
+                    \"link\": \"(html link)\", \
+                    \"bgcolor\": \"#CC99CC\" \
+                }, \
+                { \
+                    \"name\": \"Mem\", \
+                    \"link\": \"(html link)\", \
+                    \"bgcolor\": \"#CC99CC\" \
+                } \
+            ] \
+        }, \
+        { \
+            \"name\": \"Windows2003\", \
+            \"states\": [ \
+                { \
+                    \"name\": \"CPU\", \
+                    \"link\": \"(html link)\", \
+                    \"bgcolor\": \"#98FB98\" \
+                }, \
+                { \
+                    \"name\": \"Disk\", \
+                    \"link\": \"(html link)\", \
+                    \"bgcolor\": \"#98FB98\" \
+                }, \
+                { \
+                    \"name\": \"Mem\", \
+                    \"link\": \"(html link)\", \
+                    \"bgcolor\": \"#F08080\" \
+                } \
+            ] \
+        }, \
+        { \
+            \"name\": \"Windows7\", \
+            \"states\": [ \
+                { \
+                    \"name\": \"CPU\", \
+                    \"link\": \"(html link)\", \
+                    \"bgcolor\": \"#98FB98\" \
+                }, \
+                { \
+                    \"name\": \"Disk\", \
+                    \"link\": \"(html link)\", \
+                    \"bgcolor\": \"#98FB98\" \
+                }, \
+                { \
+                    \"name\": \"Mem\", \
+                    \"link\": \"(html link)\", \
+                    \"bgcolor\": \"#F08080\" \
+                } \
+            ] \
+        } \
+    ] \
+}";
 
     // parser should throw an exception, in case of an empty string.
 	std::cout << "parsing...." << std::endl;

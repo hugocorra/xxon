@@ -24,21 +24,20 @@ namespace xxon
         if (str.empty())
             throw(std::invalid_argument("[error]: parcer received an invalid argument!"));
 
-        auto skipper =  ascii::space | '#' >> *(qi::char_ - qi::eol) >> qi::eol;
-        typedef decltype(skipper) skipper_type;
-        
-        Grammar<std::string::const_iterator, skipper_type> gramar;
+		using boost::spirit::ascii::space;
 
-        auto iter = str.begin();
+        //auto skipper =  ascii::space | '#' >> *(qi::char_ - qi::eol) >> qi::eol;
+        //typedef decltype(skipper) skipper_type;
+        
+        Grammar<std::string::const_iterator> gramar;
+
+        std::string::const_iterator iter = str.begin();
+		std::string::const_iterator end = str.end();
 
 		//std::cout << "test..." << std::endl;
 		//std::cout << "vector size = " << _ast.nodes.size() << std::endl;
 
-		AST x;
-		bool r = boost::spirit::qi::phrase_parse(iter, str.end(), gramar, skipper, x);       
-
-		_ast = x;
-
+		bool r = boost::spirit::qi::phrase_parse(iter, end, gramar, space, _ast);
         return r && (iter == str.end());
     }
 
