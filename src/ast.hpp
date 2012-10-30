@@ -15,6 +15,7 @@ namespace xxon
     class List;
 
     typedef boost::variant<
+        boost::none_t,
 		Dict,
 		List,
 		bool,

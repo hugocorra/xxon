@@ -39,36 +39,21 @@ public:
     }
 };
 
-class get_list : public boost::static_visitor<xxon::List*>
-{
-public:
-    template <typename T> xxon::List* operator()(T &t) const
-    {
-        return NULL;
-    }
-
-    xxon::List* operator()(xxon::List& list) const
-    {
-        return &list;
-    }
-};
-
-class get_dict : public boost::static_visitor<xxon::Dict*>
-{
-public:
-    template <typename T> xxon::Dict* operator()(T &t) const
-    {
-        return NULL;
-    }
-
-    xxon::Dict* operator()(xxon::Dict& dict) const
-    {
-        return &dict;
-    }
-};
-
-
-//class get_value : public boost::static_visitor<xxon::Dict*>
+//class get_list : public boost::static_visitor<xxon::List*>
+//{
+//public:
+//    template <typename T> xxon::List* operator()(T &t) const
+//    {
+//        return NULL;
+//    }
+//
+//    xxon::List* operator()(xxon::List& list) const
+//    {
+//        return &list;
+//    }
+//};
+//
+//class get_dict : public boost::static_visitor<xxon::Dict*>
 //{
 //public:
 //    template <typename T> xxon::Dict* operator()(T &t) const
@@ -97,10 +82,12 @@ public:
     }
 };
 
+typedef get_value<xxon::Dict> get_dict;
+typedef get_value<xxon::List> get_list;
+
 template <typename T, typename U>
 T* getValue(U &x)
 {
-    //return NULL;
     return boost::apply_visitor(get_value<T>(), x);
 }
 
@@ -185,8 +172,16 @@ BOOST_AUTO_TEST_CASE(TestCaseParserDictElements)
 
     BOOST_CHECK(name && *name == "Stark");
     BOOST_CHECK(male && *male == true);
-    BOOST_CHECK(children && *children == 7);
+    BOOST_CHECK(children && static_cast<int>(*children) == 7);
 }
+
+
+
+
+
+
+
+
 
 
 /**
