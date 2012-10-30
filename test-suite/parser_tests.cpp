@@ -11,6 +11,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/variant/get.hpp>
 
 #include <src/grammar.hpp>
 #include <src/parser.hpp>
@@ -18,6 +19,38 @@
 #include <src/ast_debugger.hpp>
 
 BOOST_AUTO_TEST_SUITE(TestModuleParser)
+
+/**
+ * Test Description: Test the parser behavior with empty strings.
+ **/
+BOOST_AUTO_TEST_CASE(TestCaseParserEmpty)
+{
+    boost::shared_ptr<xxon::AST> ast(new xxon::AST);
+    xxon::Parser parser(*ast);
+
+    std::string empty_1 = "";
+
+    // parser should return true, in case of a string with only commentaries.
+    BOOST_CHECK_EQUAL(parser.execute(empty_1), true);
+//	BOOST_CHECK_EQUAL(ast->collection, true);
+}
+
+BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
+{
+ //   boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+ //   xxon::Parser parser(*ast_ptr);
+
+	//std::string empty_dict = "{}";
+
+	//BOOST_CHECK_EQUAL(parser.execute(empty_dict), true);
+	//BOOST_CHECK_EQUAL(ast_ptr->nodes.size(), 1);
+
+	//xxon::Dict dict = boost::get<xxon::Dict>(ast_ptr->nodes[0]);
+	//BOOST_CHECK_EQUAL(dict.items.empty(), true);
+
+}
+
+
 
 /**
  * Test Description: Test the parser behavior with empty strings.
@@ -37,8 +70,8 @@ BOOST_AUTO_TEST_SUITE(TestModuleParser)
 //    BOOST_CHECK_EQUAL(parser.execute(empty_2), true);
 //}
 
-BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
-{
+//BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
+//{
  //   boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
  //   xxon::Parser parser(*ast_ptr);
 
@@ -51,7 +84,7 @@ BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
 
     // parser should return true, in case of a string with only commentaries.
     //BOOST_CHECK_EQUAL(parser.execute(empty_2), true);
-}
+//}
 
 BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
 {
@@ -160,11 +193,11 @@ BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
     parser.execute(empty_list);
 	std::cout << "fim parsing...." << std::endl;
 
-	std::cout << "ListTest Size = " << a.nodes.size() << std::endl;
+	//std::cout << "ListTest Size = " << a.nodes.size() << std::endl;
 	//std::copy(ast_ptr->nodes.begin(), ast_ptr->nodes.end(), std::ostream_iterator<int>(std::cout, ";"));
-	std::cout << std::endl;
+	//std::cout << std::endl;
 
-	debug_ast(a);
+	//debug_ast(a);
 
     // parser should return true, in case of a string with only commentaries.
     //BOOST_CHECK_EQUAL(parser.execute(empty_2), true);
