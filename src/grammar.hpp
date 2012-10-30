@@ -60,14 +60,15 @@ namespace xxon
 				>>  -(':' >> value ); //< reads the : not consumed by the key rule, then...
 
 			dict = lit('{')
-				>>  pair[insert(at_c<0>(_val), _1)] % ','
+				>> *(pair[insert(at_c<0>(_val), _1)] % ',')
 				>> lit('}');
 
 			list = lit('[')
-				>> (value)[push_back(at_c<0>(_val), qi::_1)] % ','
+				>> *(value[push_back(at_c<0>(_val), qi::_1)] % ',')
 				>> lit(']');
 
-			ast = dict[push_back(at_c<0>(_val), qi::_1)];
+			//ast = dict[push_back(at_c<0>(_val), qi::_1)];
+			ast = dict[at_c<0>(_val) = qi::_1] | list[at_c<0>(_val) = qi::_1];
         }
 
         qi::rule<Iterator, AnyValue(),    Skipper> value;

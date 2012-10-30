@@ -22,7 +22,7 @@ namespace xxon
     bool Parser::execute(const std::string& str)
     {      
         if (str.empty())
-            throw(std::invalid_argument("[error]: parcer received an invalid argument!"));
+            return true;
 
 		using boost::spirit::ascii::space;
 

@@ -43,11 +43,14 @@ namespace xxon
 
     class AST {
 	public:
-		AST() : nodes(0) {};
+		AST() : collection(boost::none) {};
+		//AST() : nodes(0) {};
 
-		typedef std::vector<boost::variant<Dict, List>> NodeType;
+		//typedef std::vector<boost::variant<Dict, List>> NodeType;
 		//typedef std::vector<int> NodeType;
-        NodeType nodes;
+        //NodeType nodes;
+		typedef boost::variant<boost::none_t, Dict, List> NodeType;
+		NodeType collection;
     };
 
     /* a tree node can be: <string, string> or <string, AST> */
@@ -99,7 +102,7 @@ namespace xxon
 /* in order to use some spirit features, it's necessary to transform it in a random access sequence. */
 BOOST_FUSION_ADAPT_STRUCT(
     xxon::AST,
-    (xxon::AST::NodeType, nodes)
+	(xxon::AST::NodeType, collection)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(

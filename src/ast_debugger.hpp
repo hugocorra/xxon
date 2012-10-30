@@ -21,15 +21,15 @@ namespace xxon
 
         void operator()(AST &i) const
         {
-            std::string tabulator(_level, '\t');
+            //std::string tabulator(_level, '\t');
 
-            std::cout << "[VISITION SUBTREE, SIZE = " <<  i.nodes.size() << "]" << std::endl;
-            for (auto it = i.nodes.begin(); it != i.nodes.end(); ++it)
-            {
-                //std::cout << tabulator << "> key: " << it->first << "\t";
-                //boost::apply_visitor(ast_visitor(_level+1), it);
-                //std::cout << std::endl;
-            }
+            //std::cout << "[VISITION SUBTREE, SIZE = " <<  i.nodes.size() << "]" << std::endl;
+            //for (auto it = i.nodes.begin(); it != i.nodes.end(); ++it)
+            //{
+            //    //std::cout << tabulator << "> key: " << it->first << "\t";
+            //    //boost::apply_visitor(ast_visitor(_level+1), it);
+            //    //std::cout << std::endl;
+            //}
         }
 
 		void operator()(List& l) const
@@ -121,13 +121,13 @@ namespace xxon
     /* prints the whole tree structure. */
     void debug_ast(AST& ast)
     {
-        for (auto it = ast.nodes.begin(); it != ast.nodes.end(); ++it)
-        {
-            //std::cout << "> key: " << it-> << "\t";
-			//std::cout << "[d] traversing node: " << std::endl;
-			boost::apply_visitor(ast_visitor(1), *it);
-            //std::cout << std::endl;
-        }
+   //     for (auto it = ast.nodes.begin(); it != ast.nodes.end(); ++it)
+   //     {
+   //         //std::cout << "> key: " << it-> << "\t";
+			////std::cout << "[d] traversing node: " << std::endl;
+			boost::apply_visitor(ast_visitor(1), ast.collection);
+   //         //std::cout << std::endl;
+   //     }
     }
 };
 
