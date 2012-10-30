@@ -34,9 +34,6 @@ namespace xxon
         std::string::const_iterator iter = str.begin();
 		std::string::const_iterator end = str.end();
 
-		//std::cout << "test..." << std::endl;
-		//std::cout << "vector size = " << _ast.nodes.size() << std::endl;
-
 		bool r = boost::spirit::qi::phrase_parse(iter, end, gramar, space, _ast);
         return r && (iter == str.end());
     }

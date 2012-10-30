@@ -20,6 +20,90 @@
 
 BOOST_AUTO_TEST_SUITE(TestModuleParser)
 
+class collection_size : public boost::static_visitor<size_t>
+{
+public:
+    template <typename T> size_t operator()(T &t) const
+    {
+        return static_cast<size_t>(0);
+    }
+
+    size_t operator()(xxon::Dict& dict) const
+    {
+        return dict.size();
+    }
+    
+    size_t operator()(xxon::List& list) const
+    {
+        return list.size();
+    }
+};
+
+class get_list : public boost::static_visitor<xxon::List*>
+{
+public:
+    template <typename T> xxon::List* operator()(T &t) const
+    {
+        return NULL;
+    }
+
+    xxon::List* operator()(xxon::List& list) const
+    {
+        return &list;
+    }
+};
+
+class get_dict : public boost::static_visitor<xxon::Dict*>
+{
+public:
+    template <typename T> xxon::Dict* operator()(T &t) const
+    {
+        return NULL;
+    }
+
+    xxon::Dict* operator()(xxon::Dict& dict) const
+    {
+        return &dict;
+    }
+};
+
+
+//class get_value : public boost::static_visitor<xxon::Dict*>
+//{
+//public:
+//    template <typename T> xxon::Dict* operator()(T &t) const
+//    {
+//        return NULL;
+//    }
+//
+//    xxon::Dict* operator()(xxon::Dict& dict) const
+//    {
+//        return &dict;
+//    }
+//};
+
+template <typename T>
+class get_value : public boost::static_visitor<T*>
+{
+public:
+    template <typename U> T* operator()(U &t) const
+    {
+        return NULL;
+    }
+
+    T* operator()(T& t) const
+    {
+        return &t;
+    }
+};
+
+template <typename T, typename U>
+T* getValue(U &x)
+{
+    //return NULL;
+    return boost::apply_visitor(get_value<T>(), x);
+}
+
 /**
  * Test Description: Test the parser behavior with empty strings.
  **/
@@ -32,24 +116,77 @@ BOOST_AUTO_TEST_CASE(TestCaseParserEmpty)
 
     // parser should return true, in case of a string with only commentaries.
     BOOST_CHECK_EQUAL(parser.execute(empty_1), true);
-//	BOOST_CHECK_EQUAL(ast->collection, true);
+	BOOST_CHECK_EQUAL(ast->exists(), false);
 }
 
 BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
 {
- //   boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
- //   xxon::Parser parser(*ast_ptr);
+    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+    xxon::Parser parser(*ast_ptr);
 
-	//std::string empty_dict = "{}";
+	std::string empty_dict = "{}";
 
-	//BOOST_CHECK_EQUAL(parser.execute(empty_dict), true);
-	//BOOST_CHECK_EQUAL(ast_ptr->nodes.size(), 1);
+	BOOST_CHECK_EQUAL(parser.execute(empty_dict), true);
+	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
 
-	//xxon::Dict dict = boost::get<xxon::Dict>(ast_ptr->nodes[0]);
-	//BOOST_CHECK_EQUAL(dict.items.empty(), true);
-
+    BOOST_CHECK_EQUAL(boost::apply_visitor(collection_size(), ast_ptr->collection), 0);
 }
 
+BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
+{
+    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+    xxon::Parser parser(*ast_ptr);
+
+	std::string empty_list = "[]";
+
+	BOOST_CHECK_EQUAL(parser.execute(empty_list), true);
+	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
+
+    BOOST_CHECK_EQUAL(boost::apply_visitor(collection_size(), ast_ptr->collection), 0);
+}
+
+BOOST_AUTO_TEST_CASE(TestCaseParserListSize)
+{
+    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+    xxon::Parser parser(*ast_ptr);
+
+	std::string str_list = "[1,true,false,4,\"Hello\"]";
+
+	BOOST_CHECK_EQUAL(parser.execute(str_list), true);
+	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
+
+    xxon::List* list = boost::apply_visitor(get_list(), ast_ptr->collection);
+
+    BOOST_REQUIRE(list != NULL);
+    BOOST_CHECK_EQUAL(list->size(), 5);
+}
+
+BOOST_AUTO_TEST_CASE(TestCaseParserDictElements)
+{
+    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+    xxon::Parser parser(*ast_ptr);
+
+    std::string str_dict = "{\"name\":\"Stark\", \"male\": true, \"children\": 7}";
+
+	BOOST_CHECK_EQUAL(parser.execute(str_dict), true);
+	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
+
+    xxon::Dict* dict = boost::apply_visitor(get_dict(), ast_ptr->collection);
+
+    BOOST_REQUIRE(dict != NULL);
+    BOOST_CHECK_EQUAL(dict->size(), 3);
+    BOOST_CHECK(dict->items.find("name") != dict->items.end());
+    BOOST_CHECK(dict->items.find("male") != dict->items.end());
+    BOOST_CHECK(dict->items.find("children") != dict->items.end());
+
+    std::string *name = getValue<std::string>(dict->items["name"]);
+    bool *male = getValue<bool>(dict->items["male"]);
+    double *children = getValue<double>(dict->items["children"]);
+
+    BOOST_CHECK(name && *name == "Stark");
+    BOOST_CHECK(male && *male == true);
+    BOOST_CHECK(children && *children == 7);
+}
 
 
 /**
@@ -86,7 +223,7 @@ BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
     //BOOST_CHECK_EQUAL(parser.execute(empty_2), true);
 //}
 
-BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
+BOOST_AUTO_TEST_CASE(TestCaseParserEmptyListXXXX)
 {
     //boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
 	xxon::AST a;
