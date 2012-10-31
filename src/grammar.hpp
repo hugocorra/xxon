@@ -43,6 +43,7 @@ namespace xxon
             using qi::double_;
             using qi::lexeme;
             using qi::lit;
+            using qi::eps;
 
             using namespace qi::labels;
 
@@ -67,8 +68,7 @@ namespace xxon
 				>> *(value[push_back(at_c<0>(_val), qi::_1)] % ',')
 				>> lit(']');
 
-			//ast = dict[push_back(at_c<0>(_val), qi::_1)];
-			ast = dict[at_c<0>(_val) = qi::_1] | list[at_c<0>(_val) = qi::_1];
+			ast = dict[at_c<0>(_val) = _1] | list[at_c<0>(_val) = _1] | eps;
         }
 
         qi::rule<Iterator, AnyValue(),    Skipper> value;

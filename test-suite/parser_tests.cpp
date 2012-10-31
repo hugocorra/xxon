@@ -39,34 +39,6 @@ public:
     }
 };
 
-//class get_list : public boost::static_visitor<xxon::List*>
-//{
-//public:
-//    template <typename T> xxon::List* operator()(T &t) const
-//    {
-//        return NULL;
-//    }
-//
-//    xxon::List* operator()(xxon::List& list) const
-//    {
-//        return &list;
-//    }
-//};
-//
-//class get_dict : public boost::static_visitor<xxon::Dict*>
-//{
-//public:
-//    template <typename T> xxon::Dict* operator()(T &t) const
-//    {
-//        return NULL;
-//    }
-//
-//    xxon::Dict* operator()(xxon::Dict& dict) const
-//    {
-//        return &dict;
-//    }
-//};
-
 template <typename T>
 class get_value : public boost::static_visitor<T*>
 {
@@ -90,6 +62,45 @@ T* getValue(U &x)
 {
     return boost::apply_visitor(get_value<T>(), x);
 }
+
+template <typename T>
+void dictValue(const xxon::Dict* dict, const std::string& key, T& variable)
+{
+    auto it = dict->items.find(key);
+
+    if (it != dict->items.end())
+    {
+        const T* value_ptr = boost::get<T>(&(it->second));
+
+        if (value_ptr != NULL)
+            variable = *value_ptr;
+    }
+}
+
+template <typename T>
+T getOrDefault(const xxon::Dict* dict, const std::string& key)
+{
+    auto it = dict->items.find(key);
+
+    if (it != dict->items.end())
+    {
+        const T* value_ptr = boost::get<T>(&(it->second));
+
+        if (value_ptr != NULL)
+            variable = *value_ptr;
+    }
+}
+
+template <typename T, typename U>
+T getOrDefault(U& x)
+{
+    T* t = getValue<T>(x);
+    if (t)
+        return *t;
+
+    return T();
+}
+
 
 /**
  * Test Description: Test the parser behavior with empty strings.
@@ -176,7 +187,58 @@ BOOST_AUTO_TEST_CASE(TestCaseParserDictElements)
 }
 
 
+BOOST_AUTO_TEST_CASE(TestCaseParserWindow)
+{
+    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+    xxon::Parser parser(*ast_ptr);
 
+    const std::string mywindow_str =
+    "{ \
+        \"title\": \"Hello World\", \
+        \"position\": [ \
+            200, \
+            10 \
+        ], \
+        \"size\": [ \
+            300, \
+            400 \
+        ], \
+        \"border\": false \
+    }";
+
+    struct Window
+    {
+        std::string title;
+        std::pair<double, double> position;
+        std::pair<double, double> size;
+        bool border;
+    };
+
+    Window window;
+
+    BOOST_CHECK_EQUAL(parser.execute(mywindow_str), true);
+    BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
+
+    xxon::Dict *dict = boost::get<xxon::Dict>(&ast_ptr->collection);
+    BOOST_REQUIRE(dict != NULL);
+
+
+    BOOST_CHECK(dict->items.find("title") != dict->items.end());
+
+    auto it = dict->items.find("title");
+
+    std::string *title = getValue<std::string>(it->second);
+    BOOST_CHECK(title && *title == "Hello World");
+
+    dictValue<std::string>(dict, "title", window.title);
+    dictValue<bool>(dict, "border", window.border);
+
+
+    BOOST_CHECK_EQUAL(window.title, "Hello World");
+    BOOST_CHECK_EQUAL(window.border, false);
+    
+
+}
 
 
 

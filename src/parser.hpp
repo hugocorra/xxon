@@ -14,7 +14,24 @@ namespace xxon
     {
     public:
         Parser(AST& ast);
-        bool execute(const std::string& str);
+
+        template <typename TStream>
+        bool execute(const TStream& stream) //(const std::string& str);
+        {
+		    using boost::spirit::ascii::space;
+
+            //auto skipper =  ascii::space | '#' >> *(qi::char_ - qi::eol) >> qi::eol;
+            //typedef decltype(skipper) skipper_type;
+        
+            Grammar<TStream::const_iterator> gramar;
+
+            TStream::const_iterator iter = stream.begin();
+		    TStream::const_iterator end = stream.end();
+
+		    bool r = boost::spirit::qi::phrase_parse(iter, end, gramar, space, _ast);
+            return r && (iter == stream.end());
+        }
+
         void reset(AST& ast);
 
     private:
