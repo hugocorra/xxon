@@ -19,6 +19,7 @@ namespace xxon
 		Dict,
 		List,
 		bool,
+        int,
 		double,
 		std::string
     > AnyValue;

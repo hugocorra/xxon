@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(TestCaseParserDictElements)
     boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
     xxon::Parser parser(*ast_ptr);
 
-    std::string str_dict = "{\"name\":\"Stark\", \"male\": true, \"children\": 7}";
+    std::string str_dict = "{\"name\":\"Stark\", \"male\": true, \"children\": 7, \"weight\": 1.42}";
 
 	BOOST_CHECK_EQUAL(parser.execute(str_dict), true);
 	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
@@ -172,18 +172,22 @@ BOOST_AUTO_TEST_CASE(TestCaseParserDictElements)
     xxon::Dict* dict = boost::apply_visitor(get_dict(), ast_ptr->collection);
 
     BOOST_REQUIRE(dict != NULL);
-    BOOST_CHECK_EQUAL(dict->size(), 3);
+    BOOST_CHECK_EQUAL(dict->size(), 4);
     BOOST_CHECK(dict->items.find("name") != dict->items.end());
     BOOST_CHECK(dict->items.find("male") != dict->items.end());
     BOOST_CHECK(dict->items.find("children") != dict->items.end());
+    BOOST_CHECK(dict->items.find("weight") != dict->items.end());
 
     std::string *name = getValue<std::string>(dict->items["name"]);
     bool *male = getValue<bool>(dict->items["male"]);
-    double *children = getValue<double>(dict->items["children"]);
+    int *children = getValue<int>(dict->items["children"]);
+    double *weight = getValue<double>(dict->items["weight"]);
 
     BOOST_CHECK(name && *name == "Stark");
     BOOST_CHECK(male && *male == true);
-    BOOST_CHECK(children && static_cast<int>(*children) == 7);
+    BOOST_CHECK(children && *children == 7);
+    BOOST_REQUIRE(weight != NULL);
+    BOOST_CHECK_CLOSE(*weight, 1.42, 0.0001);
 }
 
 
@@ -221,19 +225,15 @@ BOOST_AUTO_TEST_CASE(TestCaseParserWindow)
 
     xxon::Dict *dict = boost::get<xxon::Dict>(&ast_ptr->collection);
     BOOST_REQUIRE(dict != NULL);
-
-
     BOOST_CHECK(dict->items.find("title") != dict->items.end());
 
     auto it = dict->items.find("title");
-
     std::string *title = getValue<std::string>(it->second);
     BOOST_CHECK(title && *title == "Hello World");
 
     dictValue<std::string>(dict, "title", window.title);
     dictValue<bool>(dict, "border", window.border);
-
-
+    
     BOOST_CHECK_EQUAL(window.title, "Hello World");
     BOOST_CHECK_EQUAL(window.border, false);
     

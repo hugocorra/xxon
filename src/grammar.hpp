@@ -11,8 +11,8 @@
 #include <boost/spirit/include/qi_lit.hpp>
 #include <boost/spirit/include/qi_directive.hpp>
 //#include <boost/phoenix/stl/container.hpp>
-#include <boost/spirit/home/classic/core/composite/directives.hpp>
 #include <boost/typeof/typeof.hpp>
+#include <boost/spirit/include/qi_real.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -41,6 +41,7 @@ namespace xxon
 
             using qi::bool_;
             using qi::double_;
+            using qi::int_;
             using qi::lexeme;
             using qi::lit;
             using qi::eps;
@@ -55,7 +56,8 @@ namespace xxon
 				>> lexeme[+(char_ - '"')[_val += _1]]
 				>> '"';
             
-            value =  (text | bool_ | double_ | dict | list);
+            //value =  (text | bool_ | qi::real_parser<double,qi::strict_real_policies<double>>() | int_ | dict | list);
+            value =  (text | bool_ | ((int_ - double_) | int_) | dict | list);
 		
             pair  = key               
 				>>  -(':' >> value ); //< reads the : not consumed by the key rule, then...
