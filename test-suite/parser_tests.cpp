@@ -94,11 +94,22 @@ T getOrDefault(const xxon::Dict* dict, const std::string& key)
 template <typename T, typename U>
 T getOrDefault(U& x)
 {
-    T* t = getValue<T>(x);
-    if (t)
-        return *t;
+    T* t_value = getValue<T>(x);
+    if (t_value)
+        return *t_value;
 
     return T();
+}
+
+template <typename ContainerType>
+bool fillContainer(xxon::List& lst, ContainerType& container)
+{
+	for (auto it = lst.values.begin(); it != lst.values.end(); ++it)
+	{
+		ContainerType::value_type *t_value = boost::get<T>(&(*it));
+		if (t_value)
+			container.push_back(t_value);
+	}
 }
 
 
