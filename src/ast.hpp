@@ -14,6 +14,7 @@ namespace xxon
     class Dict;
     class List;
 
+	/* AnyValue can hold any type supported by JSON. */
     typedef boost::variant<
         boost::none_t,
 		Dict,
@@ -24,6 +25,8 @@ namespace xxon
 		std::string
     > AnyValue;
 
+	/* Dict is a structure that associates keys with values. The key should be a 
+	 * string and the value can be any type supported by AnyValue. */
     class Dict {
 	public:
         typedef std::map<std::string, AnyValue> NodeType;
@@ -33,6 +36,8 @@ namespace xxon
         NodeType items;
     };
 
+	/* List represents a sequentially heterogeneous container, that holds any
+	 * type supported by AnyValue. */
     class List {
 	public:
         typedef std::vector<AnyValue> NodeType;
@@ -42,6 +47,10 @@ namespace xxon
         NodeType values;
     };
 
+	/* AST is a structure that holds one of three types of information:
+	 *  0 - Nothing, there's no tree.
+	 *  1 - Dict, the root node is a dict.
+	 *  2 - List, the root node is a list. */
     class AST {
 	public:
 		AST() : collection(boost::none) {};
@@ -53,7 +62,8 @@ namespace xxon
     };
 };
 
-/* in order to use some spirit features, it's necessary to transform it in a random access sequence. */
+/* in order to use some spirit features, it's necessary to transform all 
+ * structures into random access sequences. */
 BOOST_FUSION_ADAPT_STRUCT(
     xxon::AST,
 	(xxon::AST::NodeType, collection)

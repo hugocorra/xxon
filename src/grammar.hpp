@@ -5,6 +5,7 @@
 #include <boost/fusion/include/std_pair.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_fusion.hpp>
+#include <boost/spirit/include/phoenix_object.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/spirit/include/qi.hpp>
@@ -36,9 +37,13 @@ namespace xxon
             using ascii::char_;
 
             using phoenix::at_c;
+			using phoenix::construct;
             using phoenix::insert;
             using phoenix::push_back;
+            using phoenix::val;
 
+			using qi::on_error;
+            using qi::fail;
             using qi::bool_;
             using qi::double_;
             using qi::int_;
@@ -56,9 +61,8 @@ namespace xxon
 				>> lexeme[+(char_ - '"')[_val += _1]]
 				>> '"';
             
-            //value =  (text | bool_ | qi::real_parser<double,qi::strict_real_policies<double>>() | int_ | dict | list);
-            value =  (text | bool_ | ((int_ - double_) | int_) | dict | list);
-		
+			value =  (text | bool_ | double_srp | int_ | dict | list);
+
             pair  = key               
 				>>  -(':' >> value ); //< reads the : not consumed by the key rule, then...
 
@@ -73,6 +77,7 @@ namespace xxon
 			ast = dict[at_c<0>(_val) = _1] | list[at_c<0>(_val) = _1] | eps;
         }
 
+		qi::real_parser<double,qi::strict_real_policies<double>> double_srp;
         qi::rule<Iterator, AnyValue(),    Skipper> value;
         qi::rule<Iterator, AST(),         Skipper> ast;
         qi::rule<Iterator, Dict(),        Skipper> dict;

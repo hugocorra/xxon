@@ -17,100 +17,11 @@
 #include <src/parser.hpp>
 #include <src/ast.hpp>
 #include <src/ast_debugger.hpp>
+#include <src/handler.hpp>
+
 
 BOOST_AUTO_TEST_SUITE(TestModuleParser)
 
-class collection_size : public boost::static_visitor<size_t>
-{
-public:
-    template <typename T> size_t operator()(T &t) const
-    {
-        return static_cast<size_t>(0);
-    }
-
-    size_t operator()(xxon::Dict& dict) const
-    {
-        return dict.size();
-    }
-    
-    size_t operator()(xxon::List& list) const
-    {
-        return list.size();
-    }
-};
-
-template <typename T>
-class get_value : public boost::static_visitor<T*>
-{
-public:
-    template <typename U> T* operator()(U &t) const
-    {
-        return NULL;
-    }
-
-    T* operator()(T& t) const
-    {
-        return &t;
-    }
-};
-
-typedef get_value<xxon::Dict> get_dict;
-typedef get_value<xxon::List> get_list;
-
-template <typename T, typename U>
-T* getValue(U &x)
-{
-    return boost::apply_visitor(get_value<T>(), x);
-}
-
-template <typename T>
-void dictValue(const xxon::Dict* dict, const std::string& key, T& variable)
-{
-    auto it = dict->items.find(key);
-
-    if (it != dict->items.end())
-    {
-        const T* value_ptr = boost::get<T>(&(it->second));
-
-        if (value_ptr != NULL)
-            variable = *value_ptr;
-    }
-}
-
-template <typename T>
-T getOrDefault(const xxon::Dict* dict, const std::string& key)
-{
-    auto it = dict->items.find(key);
-
-    if (it != dict->items.end())
-    {
-        const T* value_ptr = boost::get<T>(&(it->second));
-
-        if (value_ptr != NULL)
-            variable = *value_ptr;
-    }
-}
-
-template <typename T, typename U>
-T getOrDefault(U& x)
-{
-    T* t_value = getValue<T>(x);
-    if (t_value)
-        return *t_value;
-
-    return T();
-}
-
-template <typename ContainerType>
-bool fillContainer(xxon::List& lst, ContainerType& container)
-{
-	for (auto it = lst.values.begin(); it != lst.values.end(); ++it)
-	{
-		ContainerType::value_type *t_value = boost::get<T>(&(*it));
-		if (t_value)
-			container.push_back(t_value);
-	}
-}
 
 
 /**
@@ -138,7 +49,7 @@ BOOST_AUTO_TEST_CASE(TestCaseParserEmptyDict)
 	BOOST_CHECK_EQUAL(parser.execute(empty_dict), true);
 	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
 
-    BOOST_CHECK_EQUAL(boost::apply_visitor(collection_size(), ast_ptr->collection), 0);
+    BOOST_CHECK_EQUAL(boost::apply_visitor(xxon::collectionSize(), ast_ptr->collection), 0);
 }
 
 BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
@@ -151,7 +62,7 @@ BOOST_AUTO_TEST_CASE(TestCaseParserEmptyList)
 	BOOST_CHECK_EQUAL(parser.execute(empty_list), true);
 	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
 
-    BOOST_CHECK_EQUAL(boost::apply_visitor(collection_size(), ast_ptr->collection), 0);
+    BOOST_CHECK_EQUAL(boost::apply_visitor(xxon::collectionSize(), ast_ptr->collection), 0);
 }
 
 BOOST_AUTO_TEST_CASE(TestCaseParserListSize)
@@ -164,7 +75,7 @@ BOOST_AUTO_TEST_CASE(TestCaseParserListSize)
 	BOOST_CHECK_EQUAL(parser.execute(str_list), true);
 	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
 
-    xxon::List* list = boost::apply_visitor(get_list(), ast_ptr->collection);
+    xxon::List* list = boost::get<xxon::List>(&ast_ptr->collection);//boost::apply_visitor(get_list(), ast_ptr->collection);
 
     BOOST_REQUIRE(list != NULL);
     BOOST_CHECK_EQUAL(list->size(), 5);
@@ -175,12 +86,12 @@ BOOST_AUTO_TEST_CASE(TestCaseParserDictElements)
     boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
     xxon::Parser parser(*ast_ptr);
 
-    std::string str_dict = "{\"name\":\"Stark\", \"male\": true, \"children\": 7, \"weight\": 1.42}";
+	std::string str_dict = "{\"name\":\"Stark\", \"male\": true, \"children\": 7, \"weight\": 1.42}";
 
 	BOOST_CHECK_EQUAL(parser.execute(str_dict), true);
 	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
 
-    xxon::Dict* dict = boost::apply_visitor(get_dict(), ast_ptr->collection);
+    xxon::Dict* dict = boost::get<xxon::Dict>(&ast_ptr->collection); 
 
     BOOST_REQUIRE(dict != NULL);
     BOOST_CHECK_EQUAL(dict->size(), 4);
@@ -189,10 +100,10 @@ BOOST_AUTO_TEST_CASE(TestCaseParserDictElements)
     BOOST_CHECK(dict->items.find("children") != dict->items.end());
     BOOST_CHECK(dict->items.find("weight") != dict->items.end());
 
-    std::string *name = getValue<std::string>(dict->items["name"]);
-    bool *male = getValue<bool>(dict->items["male"]);
-    int *children = getValue<int>(dict->items["children"]);
-    double *weight = getValue<double>(dict->items["weight"]);
+    std::string *name = boost::get<std::string>(&dict->items["name"]);
+    bool *male = boost::get<bool>(&dict->items["male"]);
+    int *children =  boost::get<int>(&dict->items["children"]);
+    double *weight =  boost::get<double>(&dict->items["weight"]);
 
     BOOST_CHECK(name && *name == "Stark");
     BOOST_CHECK(male && *male == true);
@@ -202,7 +113,7 @@ BOOST_AUTO_TEST_CASE(TestCaseParserDictElements)
 }
 
 
-BOOST_AUTO_TEST_CASE(TestCaseParserWindow)
+BOOST_AUTO_TEST_CASE(TestCaseParserJSON1)
 {
     boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
     xxon::Parser parser(*ast_ptr);
@@ -239,11 +150,11 @@ BOOST_AUTO_TEST_CASE(TestCaseParserWindow)
     BOOST_CHECK(dict->items.find("title") != dict->items.end());
 
     auto it = dict->items.find("title");
-    std::string *title = getValue<std::string>(it->second);
+    std::string *title = boost::get<std::string>(&it->second);
     BOOST_CHECK(title && *title == "Hello World");
 
-    dictValue<std::string>(dict, "title", window.title);
-    dictValue<bool>(dict, "border", window.border);
+    xxon::getDictValue<std::string>(dict, "title", window.title);
+    xxon::getDictValue<bool>(dict, "border", window.border);
     
     BOOST_CHECK_EQUAL(window.title, "Hello World");
     BOOST_CHECK_EQUAL(window.border, false);
@@ -252,7 +163,88 @@ BOOST_AUTO_TEST_CASE(TestCaseParserWindow)
 }
 
 
+BOOST_AUTO_TEST_CASE(TestCaseParserMediumSizeJSON)
+{
+    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+    xxon::Parser parser(*ast_ptr);
 
+	std::string empty_list = \
+	"{ \
+		\"health\": 64, \
+		\"hosts\": [ \
+			{ \
+				\"name\": \"Windows2000P\", \
+				\"states\": [ \
+					{ \
+						\"name\": \"CPU\", \
+						\"link\": \"(html link)\", \
+						\"bgcolor\": \"#CC99CC\" \
+					}, \
+					{ \
+						\"name\": \"Disk\", \
+						\"link\": \"(html link)\", \
+						\"bgcolor\": \"#CC99CC\" \
+					}, \
+					{ \
+						\"name\": \"Mem\", \
+						\"link\": \"(html link)\", \
+						\"bgcolor\": \"#CC99CC\" \
+					} \
+				] \
+			}, \
+			{ \
+				\"name\": \"Windows2003\", \
+				\"states\": [ \
+					{ \
+						\"name\": \"CPU\", \
+						\"link\": \"(html link)\", \
+						\"bgcolor\": \"#98FB98\" \
+					}, \
+					{ \
+						\"name\": \"Disk\", \
+						\"link\": \"(html link)\", \
+						\"bgcolor\": \"#98FB98\" \
+					}, \
+					{ \
+						\"name\": \"Mem\", \
+						\"link\": \"(html link)\", \
+						\"bgcolor\": \"#F08080\" \
+					} \
+				] \
+			}, \
+			{ \
+				\"name\": \"Windows7\", \
+				\"states\": [ \
+					{ \
+						\"name\": \"CPU\", \
+						\"link\": \"(html link)\", \
+						\"bgcolor\": \"#98FB98\" \
+					}, \
+					{ \
+						\"name\": \"Disk\", \
+						\"link\": \"(html link)\", \
+						\"bgcolor\": \"#98FB98\" \
+					}, \
+					{ \
+						\"name\": \"Mem\", \
+						\"link\": \"(html link)\", \
+						\"bgcolor\": \"#F08080\" \
+					} \
+				] \
+			} \
+		] \
+	}";
+
+    auto result = parser.execute(empty_list);
+
+	BOOST_REQUIRE_EQUAL(result, true);
+	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
+
+	xxon::Dict *dict = boost::get<xxon::Dict>(&ast_ptr->collection);
+    BOOST_REQUIRE(dict != NULL);
+	BOOST_CHECK_EQUAL(dict->size(), 2);
+
+}
 
 
 
