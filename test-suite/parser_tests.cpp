@@ -247,7 +247,16 @@ BOOST_AUTO_TEST_CASE(TestCaseParserMediumSizeJSON)
 }
 
 
+BOOST_AUTO_TEST_CASE(TestCaseParserFile1)
+{
+    boost::shared_ptr<xxon::AST> ast_ptr(new xxon::AST);
+    xxon::Parser parser(*ast_ptr);
 
+	std::string str_list = "[1,true,false,4,\"Hello\"]";
+
+	BOOST_CHECK_EQUAL(parser.execute_file("..\\test-suite\\data\\teste01.txt"), true);
+	BOOST_REQUIRE_EQUAL(ast_ptr->exists(), true);
+}
 
 /**
  * Test Description: Test the parser behavior with empty strings.
