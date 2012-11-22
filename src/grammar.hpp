@@ -59,12 +59,12 @@ namespace xxon
 
             key   =  '"' 
 				>> lexeme[+(char_ - '"')[_val += _1]]
-				>> '"';
+				>> '"' >> lit(':');
             
-			value =  (text | bool_ | double_srp | int_ | dict | list);
+			value = (text | bool_ | double_srp | int_ | dict | list)[at_c<0>(_val) = _1];
 
-            pair  = key               
-				>>  -(':' >> value ); //< reads the : not consumed by the key rule, then...
+			pair = key >> value;
+				//>>  -(':' >> value ); //< reads the : not consumed by the key rule, then...
 
 			dict = lit('{')
 				>> *(pair[insert(at_c<0>(_val), _1)] % ',')
@@ -78,13 +78,13 @@ namespace xxon
         }
 
 		qi::real_parser<double,qi::strict_real_policies<double>> double_srp;
-        qi::rule<Iterator, AnyValue(),    Skipper> value;
-        qi::rule<Iterator, AST(),         Skipper> ast;
-        qi::rule<Iterator, Dict(),        Skipper> dict;
-        qi::rule<Iterator, List(),        Skipper> list;
-        qi::rule<Iterator, std::pair<std::string, AnyValue>(), Skipper> pair;
-        qi::rule<Iterator, std::string(), Skipper> key;
-        qi::rule<Iterator, std::string(), Skipper> text;
+        qi::rule<Iterator, AnyValueHolder(), Skipper> value;
+        qi::rule<Iterator, AST(),            Skipper> ast;
+        qi::rule<Iterator, Dict(),           Skipper> dict;
+        qi::rule<Iterator, List(),           Skipper> list;
+        qi::rule<Iterator, std::pair<std::string, AnyValueHolder>(), Skipper> pair;
+        qi::rule<Iterator, std::string(),    Skipper> key;
+        qi::rule<Iterator, std::string(),    Skipper> text;
     };
 };
 
