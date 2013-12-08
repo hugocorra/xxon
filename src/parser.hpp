@@ -22,7 +22,7 @@ namespace xxon
         template <typename TStream>
         bool execute(const TStream& stream) //(const std::string& str);
         {
-		    using boost::spirit::ascii::space;
+            using boost::spirit::ascii::space;
 
             //auto skipper =  ascii::space | '#' >> *(qi::char_ - qi::eol) >> qi::eol;
             //typedef decltype(skipper) skipper_type;
@@ -30,9 +30,9 @@ namespace xxon
             Grammar<TStream::const_iterator> gramar;
 
             TStream::const_iterator iter = stream.begin();
-		    TStream::const_iterator end = stream.end();
+            TStream::const_iterator end = stream.end();
 
-		    bool r = boost::spirit::qi::phrase_parse(iter, end, gramar, space, _ast);
+            bool r = boost::spirit::qi::phrase_parse(iter, end, gramar, space, _ast);
             return r && (iter == stream.end());
         }
 
@@ -51,14 +51,13 @@ namespace xxon
             using boost::spirit::ascii::space;
             Grammar<boost::spirit::multi_pass<base_iterator_type>> gramar;
 
-		    bool r = boost::spirit::qi::phrase_parse(
+            bool r = boost::spirit::qi::phrase_parse(
                         first,
                         boost::spirit::make_default_multi_pass(base_iterator_type()), 
                         gramar, 
                         space, 
                         _ast);
 
-      //      return r;
             return true;
         }
 

@@ -37,12 +37,12 @@ namespace xxon
             using ascii::char_;
 
             using phoenix::at_c;
-			using phoenix::construct;
+            using phoenix::construct;
             using phoenix::insert;
             using phoenix::push_back;
             using phoenix::val;
 
-			using qi::on_error;
+            using qi::on_error;
             using qi::fail;
             using qi::bool_;
             using qi::double_;
@@ -53,31 +53,31 @@ namespace xxon
 
             using namespace qi::labels;
 
-			text = '"' 
-				>> lexeme[+(char_ - '"')[_val += _1]]
-				>> '"';
+            text = '"' 
+                >> lexeme[+(char_ - '"')[_val += _1]]
+                >> '"';
 
             key   =  '"' 
-				>> lexeme[+(char_ - '"')[_val += _1]]
-				>> '"' >> lit(':');
+                >> lexeme[+(char_ - '"')[_val += _1]]
+                >> '"' >> lit(':');
             
-			value = (text | bool_ | double_srp | int_ | dict | list)[at_c<0>(_val) = _1];
+            value = (text | bool_ | double_srp | int_ | dict | list)[at_c<0>(_val) = _1];
 
-			pair = key >> value;
-				//>>  -(':' >> value ); //< reads the : not consumed by the key rule, then...
+            pair = key >> value;
+                //>>  -(':' >> value ); //< reads the : not consumed by the key rule, then...
 
-			dict = lit('{')
-				>> *(pair[insert(at_c<0>(_val), _1)] % ',')
-				>> lit('}');
+            dict = lit('{')
+                >> *(pair[insert(at_c<0>(_val), _1)] % ',')
+                >> lit('}');
 
-			list = lit('[')
-				>> *(value[push_back(at_c<0>(_val), qi::_1)] % ',')
-				>> lit(']');
+            list = lit('[')
+                >> *(value[push_back(at_c<0>(_val), qi::_1)] % ',')
+                >> lit(']');
 
-			ast = dict[at_c<0>(_val) = _1] | list[at_c<0>(_val) = _1] | eps;
+            ast = dict[at_c<0>(_val) = _1] | list[at_c<0>(_val) = _1] | eps;
         }
 
-		qi::real_parser<double,qi::strict_real_policies<double>> double_srp;
+        qi::real_parser<double,qi::strict_real_policies<double>> double_srp;
         qi::rule<Iterator, AnyValueHolder(), Skipper> value;
         qi::rule<Iterator, AST(),            Skipper> ast;
         qi::rule<Iterator, Dict(),           Skipper> dict;
