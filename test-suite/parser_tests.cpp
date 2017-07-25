@@ -230,7 +230,9 @@ BOOST_AUTO_TEST_CASE(TestCaseParserFile1)
 
     std::string str_list = "[1,true,false,4,\"Hello\"]";
 
-    BOOST_CHECK_EQUAL(parser.execute_file("..\\test-suite\\data\\teste01.txt"), true);
+    boost::filesystem::path test_file("../test-suite/data/teste01.txt");
+
+    BOOST_CHECK_EQUAL(parser.execute_file(test_file.c_str()), true);
     BOOST_REQUIRE_EQUAL(ast.exists(), true);
     
     BOOST_CHECK_EQUAL(ast["name"].to<std::string>(), "test-config-core");
