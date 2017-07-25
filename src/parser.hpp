@@ -23,9 +23,6 @@ namespace xxon
         bool execute(const TStream& stream) //(const std::string& str);
         {
             using boost::spirit::ascii::space;
-
-            //auto skipper =  ascii::space | '#' >> *(qi::char_ - qi::eol) >> qi::eol;
-            //typedef decltype(skipper) skipper_type;
         
             Grammar<typename TStream::const_iterator> gramar;
 

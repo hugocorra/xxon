@@ -57,9 +57,11 @@ namespace xxon
                 >> lexeme[+(char_ - '"')[_val += _1]]
                 >> '"';
 
+            const char key_value_separator = ':';
+
             key   =  '"' 
                 >> lexeme[+(char_ - '"')[_val += _1]]
-                >> '"' >> lit(':');
+                >> '"' >> lit(key_value_separator);
             
             value = (text | bool_ | double_srp | int_ | dict | list)[at_c<0>(_val) = _1];
 
