@@ -20,7 +20,7 @@ namespace xxon
 
     /* AnyValue can hold any type supported by JSON. */
     typedef boost::variant<
-        boost::none_t,
+        boost::blank,
         Dict,
         List,
         bool,
